@@ -1,0 +1,1 @@
+http-server webapp --silent 2>/dev/null

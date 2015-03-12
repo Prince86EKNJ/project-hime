@@ -1,0 +1,20 @@
+{
+  "name": "project-hime",
+  "version": "0.0.1",
+  "description": "An experimental JavaScript and HTML5 Game",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://GameDevFox@github.com/GameDevFox/project-hime"
+  },
+  "author": "Edward Nicholes Jr.",
+  "bugs": {
+    "url": "https://github.com/GameDevFox/project-hime/issues"
+  },
+  "homepage": "https://github.com/GameDevFox/project-hime",
+  "devDependencies": {
+    "http-server": "^0.7.5"
+  }
+}
