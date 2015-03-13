@@ -1,24 +1,19 @@
 console.log("Hello Hime!");
 
-var buildPump = function(input, output) {
-	return function() {
-		output(input());
-	}
-}
+var utils = require("./utils");
 
-var pipe = function(input, output) {
-	input.out = output;
-}
+utils.loadGlobally(require("./func"));
+utils.loadGlobally(require("./pipes"));
 
 var systemTime = function() {
 	return new Date().getTime();
 }
 
 var buildRelativeValue = function(origin) {
-	return function(value) {
+	return fo(function(value) {
 		var result = value - origin;
 		arguments.callee.out(result);
-	}
+	});
 }
 
 console.out = function(value) {
@@ -28,7 +23,7 @@ console.out = function(value) {
 var now = systemTime();
 var relativeTime = buildRelativeValue(now);
 
-var pump = buildPump(systemTime, relativeTime);
+global.pump = buildPump(systemTime, relativeTime);
 pipe(relativeTime, console.out);
 
 pump();

@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+/* vim: set filetype=javascript : */
+
+var _ = require("lodash");
+var build = require("./build");
+var Gaze = require("gaze").Gaze;
+var minimatch = require("minimatch");
+
+var cwd = process.cwd()+"/";
+var out = process.stdout;
+
+var buildScripts = build.getBuildScripts();
+_.each(buildScripts, function(scriptName)
+{
+	var watchStr = "src/"+scriptName+"/*.js";
+
+	out.write("Watching \""+scriptName+"\"...\n");
+	var gaze = new Gaze(watchStr);
+	gaze.on("all", function(event, filepath) {
+		// We have to double check the path since "gaze" has a bug
+		var matches = minimatch(filepath, cwd+watchStr);
+		if(!matches)
+			return;
+
+		try
+		{
+			build.runBuildScript(scriptName);
+		}
+		catch (e)
+		{
+			console.error("An error occured while trying to build: "+scriptName);
+			console.error(e);
+		}
+	});
+});

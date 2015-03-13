@@ -1,1 +1,12 @@
-http-server webapp --silent 2>/dev/null
+mkdir -p logs
+
+# build and watch
+bin/build
+bin/watch &
+watchPid=$!
+
+# http-server
+node_modules/.bin/http-server webapp > logs/http-server.log
+
+# clean up
+kill ${watchPid}
