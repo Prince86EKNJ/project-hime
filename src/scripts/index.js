@@ -1,8 +1,8 @@
 global.$ = require("jquery");
 
-var _ = require("lodash");
+global._ = require("lodash");
 var keys = require("./keys")(document);
-var system = require("./system");
+global.system = require("./system");
 var utils = require("./utils");
 
 utils.loadGlobally(require("./element"));
@@ -11,49 +11,69 @@ utils.loadGlobally(require("./pipes"));
 
 system.out("Hello Hime!");
 
+// Build Pipes
 var now = system.time();
-var gameTime = buildOffset(now);
+var pump = buildPump(system.time);
+var gameOffset = buildOffset(now);
+var x = chain(pump, gameOffset);
+global.gameTime = split(x);
+
 var frameTime = buildDelta();
+var amp = split(buildAmp(0.3));
+global.pxPerFrame = chain(frameTime, amp);
 
-var pump = buildPump(system.time, gameTime);
-gameTime.pipe(frameTime);
+gameTime.out(pxPerFrame);
 
+// Start Pump
 setInterval(pump, 1000/30);
 
 // Keys
-var rightKey = keys.getKey("right");
-var leftKey = keys.getKey("left");
+global.wasd = _.mapValues({
+		up: "up",
+		down: "down",
+		left: "left",
+		right: "right"
+	}, function(value) {
+		var key = keys.getKey(value);
+		key.preventDefault = true;
+		return split(key);
+	}
+);
 
-	//_.map(["w", "s", "a", "d"], function(keyCode) {
-_.map(["up", "down", "left", "right"], function(keyCode) {
-	var key = keys.getKey(keyCode);
-	key.preventDefault = true;
-	key.out = function(isDown) {
-		system.out(keyCode+" "+isDown);
-	};
+global.buildCompare = buildMerge({ a: 0, b: 0 }, function(a, b) {
+	if(a == b)
+		return 0;
+	else
+		return a < b ? -1 : 1;
 });
+
+var buildXY2Point = buildMerge({ x: 0, y: 0 }, function(x, y) {
+	return [x, y];
+});
+
+var xCmp = buildCompare();
+var yCmp = buildCompare();
+var xy2Point = buildXY2Point();
+
+xCmp({ a: wasd.right, b: wasd.left });
+yCmp({ a: wasd.down, b: wasd.up });
+xy2Point({ x: xCmp, y: yCmp }).out(system.out);
 
 // Init
 $(function() {
 	var box = $(".box");
 	global.boxPos = getPosPoint(box);
 
-	var pxPerSec = buildAmp(0.1);
-	frameTime.pipe(pxPerSec);
-
-	var pxPerSecSplit = buildSplit();
-	pxPerSec.pipe(pxPerSecSplit);
-
-	// Right
 	var boxXIncr = buildIncr(boxPos.x);
-	var rightKeyValve = buildValve();
-	pxPerSecSplit.pipe(rightKeyValve);
-	rightKey.pipe(rightKeyValve.open);
-	rightKeyValve.pipe(boxXIncr);
+	var boxYIncr = buildIncr(boxPos.y);
 
-	// Left
-	var negX = buildInvert();
-	var boxXDecr = buildIncr(boxPos.x);
-	leftKey.pipe(valve(pxPerSecSplit, negX));
-	negX.pipe(boxXDecr);
+	var moveBox = {
+		x: buildIncr(boxPos.x),
+		y: buildIncr(boxPos.y)
+	};
+
+	wasd.up.out(valve(invert(pxPerFrame), moveBox.y));
+	wasd.down.out(valve(pxPerFrame, moveBox.y));
+	wasd.left.out(valve(invert(pxPerFrame), moveBox.x));
+	wasd.right.out(valve(pxPerFrame, moveBox.x));
 });

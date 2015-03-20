@@ -1,21 +1,22 @@
+var _ = require("lodash");
+
 var func = {};
 
-var f = function(func, objs) {
-	for(i in objs) {
-		func[i] = objs[i];
-	}
+var noop = function() {};
+func.noop = noop;
+
+var fo = function(func) {
+	_.merge(func, {
+		$out: noop,
+		out: function(input) {
+			if(arguments.length != 0) {
+				func.$out = input;
+				return input;
+			} else
+				return func.$out;
+		}
+	});
 	return func;
-};
-func.f = f;
-
-var fo = function(func, objs) {
-	var result = f(func, objs);
-
-	result.out = function() {};
-	result.pipe = function(input) {
-		result.out = input;
-	}
-	return result;
 };
 func.fo = fo;
 

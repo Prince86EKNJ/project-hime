@@ -32,7 +32,7 @@ module.exports = function(elem) {
 
 		if(key.state == false) {
 			key.state = true;
-			key.out(true);
+			key.$out(true);
 		}
 
 		if(key.preventDefault)
@@ -48,7 +48,7 @@ module.exports = function(elem) {
 
 		if(key.state == true) {
 			key.state = false;
-			key.out(false);
+			key.$out(false);
 		}
 
 		if(key.preventDefault)
@@ -62,13 +62,11 @@ module.exports = function(elem) {
 
 			var key = keys[code];
 			if(key == undefined) {
-				key = {
-					out: function() {},
-					pipe: function(output) { key.out = output },
+				key = fo({
 					state: false,
 					code: code,
 					preventDefault: false
-				};
+				});
 				keys[code] = key;
 			}
 			return key;
