@@ -47,7 +47,7 @@ global.buildCompare = buildMerge([0, 0], function(a, b) {
 		return a < b ? -1 : 1;
 });
 
-var buildXY2Point = buildMerge([7, 13], function(x, y) {
+var buildXY2Point = buildMerge([0, 0], function(x, y) {
 	return [x, y];
 });
 
