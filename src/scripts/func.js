@@ -20,4 +20,13 @@ var fo = function(func) {
 };
 func.fo = fo;
 
+var getArgs = function(func) {
+	var funcStr = func.toString();
+	var openParenIdx = funcStr.indexOf("(");
+	var closeParanIdx = funcStr.indexOf(")");
+	var argStr = funcStr.substring(openParenIdx+1, closeParanIdx);
+	return argStr.split(/[\s,]+/);
+};
+func.getArgs = getArgs;
+
 module.exports = func;

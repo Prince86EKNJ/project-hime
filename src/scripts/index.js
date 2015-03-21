@@ -40,14 +40,14 @@ global.wasd = _.mapValues({
 	}
 );
 
-global.buildCompare = buildMerge({ a: 0, b: 0 }, function(a, b) {
+global.buildCompare = buildMerge([0, 0], function(a, b) {
 	if(a == b)
 		return 0;
 	else
 		return a < b ? -1 : 1;
 });
 
-var buildXY2Point = buildMerge({ x: 0, y: 0 }, function(x, y) {
+var buildXY2Point = buildMerge([7, 13], function(x, y) {
 	return [x, y];
 });
 

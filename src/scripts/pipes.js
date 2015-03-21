@@ -101,12 +101,13 @@ var buildMerge = function(inputs, func) {
 		});
 
 		var push = function() {
-			var value = func.apply(this, _.values(data));
+			var value = func.apply(this, data);
 			target.$out(value);
 		}
-		_.each(data, function(value, key) {
-			target[key] = function(value) {
-				data[key] = value;
+		var args = getArgs(func);
+		_.each(args, function(arg, index) {
+			target[arg] = function(value) {
+				data[index] = value;
 				push();
 			};
 		});
