@@ -15,12 +15,11 @@ system.out("Hello Hime!");
 var now = system.time();
 var pump = buildPump(system.time);
 var gameOffset = buildOffset(now);
-var x = chain(pump, gameOffset);
-global.gameTime = split(x);
+global.gameTime = split(chain(pump, gameOffset));
 
 var frameTime = buildDelta();
-var amp = split(buildAmp(0.3));
-global.pxPerFrame = chain(frameTime, amp);
+var multiply = buildMultiply(0.3);
+global.pxPerFrame = split(chain(frameTime, multiply));
 
 gameTime.out(pxPerFrame);
 
@@ -40,37 +39,59 @@ global.wasd = _.mapValues({
 	}
 );
 
-global.buildCompare = buildMerge([0, 0], function(a, b) {
+global.buildCompare = buildMergeArray([0, 0], function(a, b) {
 	if(a == b)
 		return 0;
 	else
 		return a < b ? -1 : 1;
 });
 
-var buildXY2Point = buildMerge([0, 0], function(x, y) {
+var buildXY2Point = buildMergeArray([100, 100], function(x, y) {
 	return [x, y];
 });
 
+// TODO: Move this to "chain"?
+var all = function(grp, nodeBuilder) {
+	var result = _.mapValues(grp.out(), function(value, key) {
+		var node = nodeBuilder();
+		return chain(value, node);
+	});
+	result = group(result);
+	return result;
+};
+
 var xCmp = buildCompare();
 var yCmp = buildCompare();
-var xy2Point = buildXY2Point();
+global.xy2Point = buildXY2Point();
 
-xCmp({ a: wasd.right, b: wasd.left });
-yCmp({ a: wasd.down, b: wasd.up });
-xy2Point({ x: xCmp, y: yCmp }).out(system.out);
+xCmp([wasd.right, wasd.left]);
+yCmp([wasd.down, wasd.up]);
+global.axis = group([xCmp, yCmp]);
+
+var superAxis = all(axis, function() {
+	return buildMultiply(50);
+});
+
+var offset = group([
+	buildOffset(-100),
+	buildOffset(-100)
+]);
+
+chain(superAxis, offset, xy2Point, system.out);
 
 // Init
 $(function() {
 	var box = $(".box");
 	global.boxPos = getPosPoint(box);
 
-	var boxXIncr = buildIncr(boxPos.x);
-	var boxYIncr = buildIncr(boxPos.y);
+	var moveBox = _.mapValues(boxPos, function(value) {
+		return buildIncr(value);
+	});
 
-	var moveBox = {
-		x: buildIncr(boxPos.x),
-		y: buildIncr(boxPos.y)
-	};
+	//var pxPerFrame2D = group({ x: pxPerFrame, y: pxPerFrame });
+	//var multiX = multiply
+
+	//chain(superAxis, offset, boxPos);
 
 	wasd.up.out(valve(invert(pxPerFrame), moveBox.y));
 	wasd.down.out(valve(pxPerFrame, moveBox.y));

@@ -4,7 +4,7 @@ var func = require("./func");
 var pipes = {};
 
 var buildValve = function() {
-	var isOpen = false;
+	var isOpen = 0;
 
 	var valve = fo(function() {
 		if(isOpen) {
@@ -66,10 +66,8 @@ var buildSplit = function() {
 		});
 	});
 	split.out = function() {
-		// Getter
 		if(arguments.length == 0)
 			return outputs;
-		// Setter
 		else {
 			_.each(arguments, function(output) {
 				outputs.push(output);
@@ -86,14 +84,17 @@ var split = function(node) {
 }
 pipes.split = split;
 
-var buildMerge = function(inputs, func) {
+var buildMerge = function(defaults, func, asArray) {
+	if(asArray == undefined)
+		asArray = false;
+
 	var merge = function() {
-		var data = _.clone(inputs);
+		var data = _.clone(defaults);
+		var inputs = asArray ? [] : {};
 
 		var target = fo(function(outMap) {
 			if(arguments.length == 0)
-				// Filter
-				return arguments.callee;
+				return inputs;
 			else {
 				autoPipe(outMap, arguments.callee);
 				return arguments.callee;
@@ -106,10 +107,12 @@ var buildMerge = function(inputs, func) {
 		}
 		var args = getArgs(func);
 		_.each(args, function(arg, index) {
-			target[arg] = function(value) {
+			var key = asArray ? index : arg;
+			inputs[key] = function(value) {
 				data[index] = value;
 				push();
 			};
+			//target[key] = inputs[key];
 		});
 
 		return target;
@@ -117,6 +120,9 @@ var buildMerge = function(inputs, func) {
 	return merge;
 };
 pipes.buildMerge = buildMerge;
+
+var buildMergeArray = _.bind(buildMerge, this, _, _, true);
+pipes.buildMergeArray = buildMergeArray;
 
 var buildPump = function(input) {
 	return fo(function() {
@@ -158,22 +164,28 @@ var buildDelta = function() {
 };
 pipes.buildDelta = buildDelta;
 
-var buildAmp = function(magValue) {
+var buildMultiply = function(magValue) {
 
 	var mag = arguments.length == 0 ? 1 : magValue;
 
-	var amp = fo(function(value) {
+	var multiply = fo(function(value) {
 		var output = value * mag;
-		amp.$out(output);
-	}, {
-		magnitude: function(value) {
-			mag = value;
-		},
+		multiply.$out(output);
 	});
+	multiply.multiplier = function(value) {
+		mag = value;
+	};
 
-	return amp;
+	return multiply;
 };
-pipes.buildAmp = buildAmp;
+pipes.buildMultiply = buildMultiply;
+
+var multiply = function(node) {
+	var multiply = buildMultiply();
+	chain(node, multiply);
+	return multiply.magnitude;
+};
+pipes.multiply = multiply;
 
 var buildIncr = function(point) {
 	var inc = function(value) {
@@ -185,12 +197,17 @@ var buildIncr = function(point) {
 pipes.buildIncr = buildIncr;
 
 var autoPipe = function(output, input) {
+	var inputNodes = input;
+	if(typeof input == "function")
+		inputNodes = input();
+
 	_.each(output, function(value, key) {
-		var inVal = input[key];
+		var inVal = inputNodes[key];
 		if(inVal != undefined)
 			value.out(inVal);
 	});
-}
+	return input;
+};
 pipes.autoPipe = autoPipe;
 
 var group = function(obj) {
@@ -198,14 +215,14 @@ var group = function(obj) {
 		if(arguments.length == 0)
 			return obj;
 		else {
-			autoPipe(outMap, obj);
+			return autoPipe(outMap, obj);
 		}
 	};
 	result.out = function(inMap) {
 		if(arguments.length == 0)
 			return obj;
 		else {
-			autoPipe(obj, inMap);
+			return autoPipe(obj, inMap);
 		}
 	};
 	return result;

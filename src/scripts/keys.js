@@ -30,9 +30,9 @@ module.exports = function(elem) {
 		if(key == undefined)
 			return;
 
-		if(key.state == false) {
-			key.state = true;
-			key.$out(true);
+		if(key.state == 0) {
+			key.state = 1;
+			key.$out(1);
 		}
 
 		if(key.preventDefault)
@@ -46,9 +46,9 @@ module.exports = function(elem) {
 		if(key == undefined)
 			return;
 
-		if(key.state == true) {
-			key.state = false;
-			key.$out(false);
+		if(key.state == 1) {
+			key.state = 0;
+			key.$out(0);
 		}
 
 		if(key.preventDefault)

@@ -25,7 +25,7 @@ var getArgs = function(func) {
 	var openParenIdx = funcStr.indexOf("(");
 	var closeParanIdx = funcStr.indexOf(")");
 	var argStr = funcStr.substring(openParenIdx+1, closeParanIdx);
-	return argStr.split(/[\s,]+/);
+	return _.remove(argStr.split(/[\s,]+/));
 };
 func.getArgs = getArgs;
 
