@@ -229,4 +229,20 @@ var group = function(obj) {
 };
 pipes.group = group;
 
+var buildCompare = buildMergeArray([0, 0], function(a, b) {
+	if(a == b)
+		return 0;
+	else
+		return a < b ? -1 : 1;
+});
+pipes.buildCompare = buildCompare;
+
+var compare = function(a, b) {
+	var compare = buildCompare();
+	compare([a, b]);
+	return compare;
+
+};
+pipes.compare = compare;
+
 module.exports = pipes;

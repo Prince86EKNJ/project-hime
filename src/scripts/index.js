@@ -39,13 +39,6 @@ global.wasd = _.mapValues({
 	}
 );
 
-global.buildCompare = buildMergeArray([0, 0], function(a, b) {
-	if(a == b)
-		return 0;
-	else
-		return a < b ? -1 : 1;
-});
-
 var buildXY2Point = buildMergeArray([100, 100], function(x, y) {
 	return [x, y];
 });
@@ -60,12 +53,8 @@ var all = function(grp, nodeBuilder) {
 	return result;
 };
 
-var xCmp = buildCompare();
-var yCmp = buildCompare();
-global.xy2Point = buildXY2Point();
-
-xCmp([wasd.right, wasd.left]);
-yCmp([wasd.down, wasd.up]);
+var xCmp = compare(wasd.right, wasd.left);
+var yCmp = compare(wasd.down, wasd.up);
 global.axis = group([xCmp, yCmp]);
 
 var superAxis = all(axis, function() {
@@ -77,6 +66,7 @@ var offset = group([
 	buildOffset(-100)
 ]);
 
+global.xy2Point = buildXY2Point();
 chain(superAxis, offset, xy2Point, system.out);
 
 // Init
