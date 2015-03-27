@@ -65,11 +65,11 @@ var buildSplit = function() {
 			output.apply(this, splitArgs);
 		});
 	});
-	split.out = function() {
-		if(arguments.length == 0)
+	split.out = function(input) {
+		if(input == undefined)
 			return outputs;
 		else {
-			_.each(arguments, function(output) {
+			_.each(input, function(output) {
 				outputs.push(output);
 			});
 		}

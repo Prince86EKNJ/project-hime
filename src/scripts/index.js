@@ -1,7 +1,7 @@
 global.$ = require("jquery");
 
 global._ = require("lodash");
-var keys = require("./keys")(document);
+var buildKeys = require("./keys");
 global.system = require("./system");
 var utils = require("./utils");
 
@@ -10,6 +10,7 @@ utils.loadGlobally(require("./func"));
 utils.loadGlobally(require("./pipes"));
 
 system.out("Hello Hime!");
+var keys = buildKeys(document);
 
 // Build Pipes
 var now = system.time();
@@ -24,7 +25,7 @@ global.pxPerFrame = split(chain(frameTime, multiply));
 gameTime.out(pxPerFrame);
 
 // Start Pump
-setInterval(pump, 1000/30);
+setInterval(pump, 1000/60);
 
 // Keys
 global.wasd = _.mapValues({
@@ -39,11 +40,12 @@ global.wasd = _.mapValues({
 	}
 );
 
-var buildXY2Point = buildMergeArray([100, 100], function(x, y) {
+var buildXY2Point = buildMergeArray([0, 0], function(x, y) {
 	return [x, y];
 });
 
 // TODO: Move this to "chain"?
+// Map and Group
 var all = function(grp, nodeBuilder) {
 	var result = _.mapValues(grp.out(), function(value, key) {
 		var node = nodeBuilder();
@@ -57,34 +59,22 @@ var xCmp = compare(wasd.right, wasd.left);
 var yCmp = compare(wasd.down, wasd.up);
 global.axis = group([xCmp, yCmp]);
 
-var superAxis = all(axis, function() {
-	return buildMultiply(50);
-});
+global.speed = group(_.map([0, 0], buildMultiply));
 
-var offset = group([
-	buildOffset(-100),
-	buildOffset(-100)
-]);
+// TODO: These two mappings are a mess, clean up
+axis.out([speed()[0].multiplier, speed()[1].multiplier]);
+pxPerFrame.out(speed());
 
 global.xy2Point = buildXY2Point();
-chain(superAxis, offset, xy2Point, system.out);
 
 // Init
 $(function() {
 	var box = $(".box");
 	global.boxPos = getPosPoint(box);
 
-	var moveBox = _.mapValues(boxPos, function(value) {
+	global.moveBox = group(_.map(boxPos, function(value) {
 		return buildIncr(value);
-	});
+	}));
 
-	//var pxPerFrame2D = group({ x: pxPerFrame, y: pxPerFrame });
-	//var multiX = multiply
-
-	//chain(superAxis, offset, boxPos);
-
-	wasd.up.out(valve(invert(pxPerFrame), moveBox.y));
-	wasd.down.out(valve(pxPerFrame, moveBox.y));
-	wasd.left.out(valve(invert(pxPerFrame), moveBox.x));
-	wasd.right.out(valve(pxPerFrame, moveBox.x));
+	speed.out(moveBox);
 });

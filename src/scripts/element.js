@@ -26,10 +26,10 @@ var getCssPixelPoint = function(elem, cssName) {
 element.getCssPixelPoint = getCssPixelPoint;
 
 var getPosPoint = function(elem) {
-	var result = {
-		x: getCssPixelPoint(elem, "left"),
-		y: getCssPixelPoint(elem, "top")
-	}
+	var result = [
+		getCssPixelPoint(elem, "left"),
+		getCssPixelPoint(elem, "top")
+	];
 	return result;
 };
 element.getPosPoint = getPosPoint;
