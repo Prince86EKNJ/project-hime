@@ -6,7 +6,7 @@ var pipes = {};
 var buildValve = function() {
 	var isOpen = 0;
 
-	var valve = fo(function() {
+	var valve = func.fo(function() {
 		if(isOpen) {
 			arguments.callee.$out.apply(this, arguments);
 		}
@@ -59,7 +59,7 @@ var buildSplit = function() {
 		});
 	}
 
-	var split = fo(function() {
+	var split = func.fo(function() {
 		var splitArgs = arguments;
 		_.each(outputs, function(output) {
 			output.apply(this, splitArgs);
@@ -69,6 +69,8 @@ var buildSplit = function() {
 		if(input == undefined)
 			return outputs;
 		else {
+			if(typeof input != "object")
+				input = [input];
 			_.each(input, function(output) {
 				outputs.push(output);
 			});
@@ -84,7 +86,7 @@ var split = function(node) {
 }
 pipes.split = split;
 
-var buildMerge = function(defaults, func, asArray) {
+var buildMerge = function(defaults, mergeFunc, asArray) {
 	if(asArray == undefined)
 		asArray = false;
 
@@ -92,7 +94,7 @@ var buildMerge = function(defaults, func, asArray) {
 		var data = _.clone(defaults);
 		var inputs = asArray ? [] : {};
 
-		var target = fo(function(outMap) {
+		var target = func.fo(function(outMap) {
 			if(arguments.length == 0)
 				return inputs;
 			else {
@@ -102,10 +104,10 @@ var buildMerge = function(defaults, func, asArray) {
 		});
 
 		var push = function() {
-			var value = func.apply(this, data);
+			var value = mergeFunc.apply(this, data);
 			target.$out(value);
 		}
-		var args = getArgs(func);
+		var args = func.getArgs(mergeFunc);
 		_.each(args, function(arg, index) {
 			var key = asArray ? index : arg;
 			inputs[key] = function(value) {
@@ -124,24 +126,24 @@ pipes.buildMerge = buildMerge;
 var buildMergeArray = _.bind(buildMerge, this, _, _, true);
 pipes.buildMergeArray = buildMergeArray;
 
-var buildPump = function(input) {
-	return fo(function() {
+var pump = function(input) {
+	return func.fo(function() {
 		var output = input();
 		arguments.callee.$out(output);
 	});
 };
-pipes.buildPump = buildPump;
+pipes.pump = pump;
 
-var buildOffset = function(origin) {
-	return fo(function(value) {
-		var output = value - origin;
+var plus = function(plusValue) {
+	return func.fo(function(value) {
+		var output = value + plusValue;
 		arguments.callee.$out(output);
 	});
 };
-pipes.buildOffset = buildOffset;
+pipes.plus = plus;
 
 var buildInvert = function() {
-	return fo(function(value) {
+	return func.fo(function(value) {
 		arguments.callee.$out(-value);
 	});
 };
@@ -153,22 +155,22 @@ var invert = function(node) {
 };
 pipes.invert = invert;
 
-var buildDelta = function() {
+var delta = function() {
 	var lastValue = 0;
-	var delta = fo(function(value) {
+	var result = func.fo(function(value) {
 		var deltaValue = value - lastValue;
 		lastValue = value;
 		arguments.callee.$out(deltaValue);
 	});
-	return delta;
+	return result;
 };
-pipes.buildDelta = buildDelta;
+pipes.delta = delta;
 
 var buildMultiply = function(magValue) {
 
 	var mag = arguments.length == 0 ? 1 : magValue;
 
-	var multiply = fo(function(value) {
+	var multiply = func.fo(function(value) {
 		var output = value * mag;
 		multiply.$out(output);
 	});
@@ -244,5 +246,32 @@ var compare = function(a, b) {
 
 };
 pipes.compare = compare;
+
+var mapGroup = function(objs, func) {
+	var mapFunc = _.isArray(objs) ? _.map : _.mapValues;
+	var result = mapFunc(objs, func);
+	result = group(result);
+	return result;
+};
+pipes.mapGroup = mapGroup;
+
+///////////
+// Extra //
+///////////
+
+var buildXY2Point = buildMergeArray([0, 0], function(x, y) {
+	return [x, y];
+});
+pipes.buildXY2Point = buildXY2Point;
+
+// mapAndPipeGroup ???
+var all = function(grp, nodeBuilder) {
+	var result = _.mapValues(grp.out(), function(value, key) {
+		var node = nodeBuilder();
+		return chain(value, node);
+	});
+	result = group(result);
+	return result;
+};
 
 module.exports = pipes;

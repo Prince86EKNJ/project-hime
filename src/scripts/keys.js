@@ -1,3 +1,5 @@
+var func = require("./func");
+
 var keyCodes = {
 	"backspace": 8,
 	"bs": 8,
@@ -62,7 +64,7 @@ module.exports = function(elem) {
 
 			var key = keys[code];
 			if(key == undefined) {
-				key = fo({
+				key = func.fo({
 					state: false,
 					code: code,
 					preventDefault: false

@@ -34,4 +34,14 @@ var getPosPoint = function(elem) {
 };
 element.getPosPoint = getPosPoint;
 
+var getMovePoint = function(elem) {
+	var posPoint = getPosPoint(elem);
+
+	var result = mapGroup(posPoint, function(value) {
+		return buildIncr(value);
+	});
+	return result;
+};
+element.getMovePoint = getMovePoint;
+
 module.exports = element;
