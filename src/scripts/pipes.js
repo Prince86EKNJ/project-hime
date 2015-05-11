@@ -14,6 +14,7 @@ var buildValve = function() {
 	valve.open = function(open) {
 			isOpen = open;
 	};
+	valve.type = "valve";
 	return valve;
 };
 pipes.buildValve = buildValve;
@@ -42,6 +43,7 @@ var chain = function() {
 	});
 	result.out = prevNode.out;
 
+	result.type = "chain";
 	return result;
 }
 pipes.chain = chain;
@@ -76,6 +78,7 @@ var buildSplit = function() {
 			});
 		}
 	};
+	split.type = "split";
 	return split;
 }
 pipes.buildSplit = buildSplit;
@@ -119,6 +122,7 @@ var buildMerge = function(defaults, mergeFunc, asArray) {
 
 		return target;
 	};
+	merge.type = "merge";
 	return merge;
 };
 pipes.buildMerge = buildMerge;
@@ -127,25 +131,31 @@ var buildMergeArray = _.bind(buildMerge, this, _, _, true);
 pipes.buildMergeArray = buildMergeArray;
 
 var pump = function(input) {
-	return func.fo(function() {
+	var result = func.fo(function() {
 		var output = input();
 		arguments.callee.$out(output);
 	});
+	result.type = "pump";
+	return result;
 };
 pipes.pump = pump;
 
 var plus = function(plusValue) {
-	return func.fo(function(value) {
+	var result = func.fo(function(value) {
 		var output = value + plusValue;
 		arguments.callee.$out(output);
 	});
+	result.type = "plus";
+	return result;
 };
 pipes.plus = plus;
 
 var buildInvert = function() {
-	return func.fo(function(value) {
+	var result = func.fo(function(value) {
 		arguments.callee.$out(-value);
 	});
+	result.type = "invert";
+	return result;
 };
 pipes.buildInvert = buildInvert;
 
@@ -162,6 +172,7 @@ var delta = function() {
 		lastValue = value;
 		arguments.callee.$out(deltaValue);
 	});
+	result.type = "delta";
 	return result;
 };
 pipes.delta = delta;
@@ -178,6 +189,7 @@ var buildMultiply = function(magValue) {
 		mag = value;
 	};
 
+	multiply.type = "multiply";
 	return multiply;
 };
 pipes.buildMultiply = buildMultiply;
@@ -190,11 +202,12 @@ var multiply = function(node) {
 pipes.multiply = multiply;
 
 var buildIncr = function(point) {
-	var inc = function(value) {
+	var incr = function(value) {
 		var result = point() + value;
 		point(result);
 	};
-	return inc;
+	incr.type = "incr";
+	return incr;
 };
 pipes.buildIncr = buildIncr;
 
@@ -227,6 +240,10 @@ var group = function(obj) {
 			return autoPipe(obj, inMap);
 		}
 	};
+	result.sub = function(property) {
+		return _.pluck(obj, property);
+	}
+	result.type = "group";
 	return result;
 };
 pipes.group = group;
@@ -242,8 +259,8 @@ pipes.buildCompare = buildCompare;
 var compare = function(a, b) {
 	var compare = buildCompare();
 	compare([a, b]);
+	compare.type = "compare";
 	return compare;
-
 };
 pipes.compare = compare;
 
@@ -271,6 +288,7 @@ var all = function(grp, nodeBuilder) {
 		return chain(value, node);
 	});
 	result = group(result);
+	result.type = "all";
 	return result;
 };
 

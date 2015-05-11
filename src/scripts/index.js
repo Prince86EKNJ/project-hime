@@ -10,6 +10,8 @@ var utils = require("./utils");
 utils.loadGlobally(require("./element"));
 utils.loadGlobally(require("./pipes"));
 
+utils.loadGlobally(require("./point"));
+
 system.out("Hello Hime!");
 var keyboard = buildKeys(document);
 
@@ -31,9 +33,33 @@ chain(axis, xy2Point, system.out);
 
 global.speed = mapGroup([0, 0], buildMultiply);
 
-// TODO: This mapping is a mess, clean up
-axis.out(_.pluck(speed(), "multiplier"));
+axis.out(speed.sub("multiplier"));
 pxPerFrame.out(speed());
+
+// Render functions
+var buildHeader = function(level) {
+	var result = "";
+	while(level--)
+		result += " ";
+	return result + ">";
+};
+
+var renderNodeTree = function(node, level) {
+	level = (level == undefined) ? 0 : level;
+	var header = buildHeader(level);
+	console.log(header+" "+node.type);
+
+	var out = node.out;
+	if(out == undefined) {
+		return;
+	}
+
+	var outVal = out();
+	outVal = (typeof outVal == "object") ? outVal : [outVal];
+	_.each(outVal, function(node) {
+		renderNodeTree(node, level+1);
+	});
+};
 
 // Init
 $(function() {
@@ -44,4 +70,7 @@ $(function() {
 
 	// Start Pump
 	setInterval(gameTime, 1000/60);
+
+	renderNodeTree(gameTime);
+	renderNodeTree(wasd.left);
 });
