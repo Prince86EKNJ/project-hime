@@ -28,7 +28,7 @@ point.buildGroup = buildGroup;
 
 module.exports = point;
 
-//
+/*
 val() 		- get
 val.get()
 val(x) 		- set
@@ -48,4 +48,4 @@ func.out.get()
 
 keyboard.out().a(nextFunc)
 keyboard.out("a". nextFunc)
-//
+*/
