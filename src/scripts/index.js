@@ -1,12 +1,11 @@
 global.$ = require("jquery");
-
 global._ = require("lodash");
+
 var input = require("katana/input");
 var buildKeys = require("katana/keys");
-global.system = require("katana/system");
+var system = require("katana/system");
 var time = require("katana/time");
 var utils = require("katana/utils");
-
 var element = require("katana/element");
 var p = require("katana/pipes");
 
