@@ -7,31 +7,29 @@ global.system = require("./system");
 var time = require("./time");
 var utils = require("./utils");
 
-utils.loadGlobally(require("./element"));
-utils.loadGlobally(require("./pipes"));
-
-utils.loadGlobally(require("./point"));
+var element = require("./element");
+var p = require("./pipes");
 
 system.out("Hello Hime!");
 var keyboard = buildKeys(document);
 
 // Time outputs
-global.gameTime = split(time.buildGameTime());
+global.gameTime = p.split(time.buildGameTime());
 
-var multiply = buildMultiply(0.3);
-global.pxPerFrame = split(chain(gameTime, delta(), multiply));
+var multiply = p.buildMultiply(0.3);
+global.pxPerFrame = p.split(p.chain(gameTime, p.delta(), multiply));
 
 // Keys
 global.wasd = input.buildWASD(keyboard, input.UDLR);
 
-var xCmp = split(compare(wasd.right, wasd.left));
-var yCmp = split(compare(wasd.down, wasd.up));
-global.axis = group([xCmp, yCmp]);
+var xCmp = p.split(p.compare(wasd.right, wasd.left));
+var yCmp = p.split(p.compare(wasd.down, wasd.up));
+global.axis = p.group([xCmp, yCmp]);
 
-var xy2Point = buildXY2Point();
-chain(axis, xy2Point, system.out);
+var xy2Point = p.buildXY2Point();
+p.chain(axis, xy2Point, system.out);
 
-global.speed = mapGroup([0, 0], buildMultiply);
+global.speed = p.mapGroup([0, 0], p.buildMultiply);
 
 axis.out(speed.sub("multiplier"));
 pxPerFrame.out(speed());
@@ -64,7 +62,7 @@ var renderNodeTree = function(node, level) {
 // Init
 $(function() {
 	var box = $(".box");
-	global.boxMovePoint = getMovePoint(box);
+	global.boxMovePoint = element.getMovePoint(box);
 
 	speed.out(boxMovePoint);
 

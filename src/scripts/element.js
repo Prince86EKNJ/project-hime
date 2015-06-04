@@ -1,3 +1,5 @@
+var p = require("./pipes");
+
 var element = {};
 
 var getCssPoint = function(elem, cssName) {
@@ -37,8 +39,8 @@ element.getPosPoint = getPosPoint;
 var getMovePoint = function(elem) {
 	var posPoint = getPosPoint(elem);
 
-	var result = mapGroup(posPoint, function(value) {
-		return buildIncr(value);
+	var result = p.mapGroup(posPoint, function(value) {
+		return p.buildIncr(value);
 	});
 	return result;
 };
