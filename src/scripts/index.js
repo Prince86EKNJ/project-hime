@@ -1,14 +1,14 @@
 global.$ = require("jquery");
 
 global._ = require("lodash");
-var input = require("./input");
-var buildKeys = require("./keys");
-global.system = require("./system");
-var time = require("./time");
-var utils = require("./utils");
+var input = require("katana/input");
+var buildKeys = require("katana/keys");
+global.system = require("katana/system");
+var time = require("katana/time");
+var utils = require("katana/utils");
 
-var element = require("./element");
-var p = require("./pipes");
+var element = require("katana/element");
+var p = require("katana/pipes");
 
 system.out("Hello Hime!");
 var keyboard = buildKeys(document);
