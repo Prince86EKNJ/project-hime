@@ -7,28 +7,28 @@ var system = require("katana/system");
 var time = require("katana/time");
 var utils = require("katana/utils");
 var element = require("katana/element");
-var p = require("katana/pipes");
+var pipes = require("katana/pipes");
 
 system.out("Hello Hime!");
 var keyboard = buildKeys(document);
 
 // Time outputs
-global.gameTime = p.split(time.buildGameTime());
+global.gameTime = pipes.split(time.buildGameTime());
 
-var multiply = p.buildMultiply(0.3);
-global.pxPerFrame = p.split(p.chain(gameTime, p.delta(), multiply));
+var multiply = pipes.buildMultiply(0.3);
+global.pxPerFrame = pipes.split(pipes.chain(gameTime, pipes.delta(), multiply));
 
 // Keys
 global.wasd = input.buildWASD(keyboard, input.UDLR);
 
-var xCmp = p.split(p.compare(wasd.right, wasd.left));
-var yCmp = p.split(p.compare(wasd.down, wasd.up));
-global.axis = p.group([xCmp, yCmp]);
+var xCmp = pipes.split(pipes.compare(wasd.right, wasd.left));
+var yCmp = pipes.split(pipes.compare(wasd.down, wasd.up));
+global.axis = pipes.group([xCmp, yCmp]);
 
-var xy2Point = p.buildXY2Point();
-p.chain(axis, xy2Point, system.out);
+var xy2Point = pipes.buildXY2Point();
+pipes.chain(axis, xy2Point, system.out);
 
-global.speed = p.mapGroup([0, 0], p.buildMultiply);
+global.speed = pipes.mapGroup([0, 0], pipes.buildMultiply);
 
 axis.out(speed.sub("multiplier"));
 pxPerFrame.out(speed());
