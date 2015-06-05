@@ -12,7 +12,7 @@ var out = process.stdout;
 var buildScripts = build.getBuildScripts();
 _.each(buildScripts, function(scriptName)
 {
-	var watchStr = "src/"+scriptName+"/*.js";
+	var watchStr = "src/"+scriptName+"/**/*";
 
 	out.write("Watching \""+scriptName+"\"...\n");
 	var gaze = new Gaze(watchStr);
