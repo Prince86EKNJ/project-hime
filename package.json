@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "An experimental JavaScript and HTML5 Game",
   "scripts": {
-    "postinstall": "git -C node_modules clone https://Prince86EKNJ@github.com/Prince86EKNJ/katana",
+    "postinstall": "if [ ! -d node_modules/katana ]; then git -C node_modules clone https://Prince86EKNJ@github.com/Prince86EKNJ/katana; fi",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
