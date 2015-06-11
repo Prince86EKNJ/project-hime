@@ -1,6 +1,8 @@
 global.$ = require("jquery");
 global._ = require("lodash");
 
+global.P = require("bluebird");
+
 var input = require("katana/input");
 var buildKeys = require("katana/keys");
 var system = require("katana/system");
@@ -60,14 +62,21 @@ var renderNodeTree = function(node, level) {
 
 // Init
 $(function() {
-	var box = $(".box");
-	global.boxMovePoint = element.getMovePoint(box);
+	console.log("First!");
+	P.resolve($.get("data/elements.json")).then(function() {
+		console.log("Second!");
+		// Render box
+		var elBuild = element.buildElementBuilder();
 
-	speed.out(boxMovePoint);
+		var box = $(".box");
+		global.boxMovePoint = element.getMovePoint(box);
 
-	// Start Pump
-	setInterval(gameTime, 1000/60);
+		speed.out(boxMovePoint);
 
-	renderNodeTree(gameTime);
-	renderNodeTree(wasd.left);
+		// Start Pump
+		setInterval(gameTime, 1000/60);
+
+		renderNodeTree(gameTime);
+		renderNodeTree(wasd.left);
+	});
 });

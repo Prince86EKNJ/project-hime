@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+/* vim: set filetype=javascript : */
+
+var fs = require("fs");
+var _ = require("lodash");
+
+var inDir = "./src/elements/";
+var outDir = "./webapp/data/";
+var outFile = outDir+"elements.json";
+var encoding = "utf8";
+
+var elementFiles = fs.readdirSync(inDir);
+
+var getelementData = function(elementName) {
+	return fs.readFileSync(inDir+elementName, encoding);
+}
+
+var elements = {};
+_.each(elementFiles, function(elementName) {
+	var elementData = getelementData(elementName);
+	elements[elementName] = elementData;
+});
+var elementsStr = JSON.stringify(elements);
+
+// Create "webapp/data" dir if it doesn't exists
+try {
+	fs.mkdirSync(outDir);
+} catch(e) {}
+
+// Write elementsData to file
+fs.writeFileSync(outFile, elementsStr, encoding);
