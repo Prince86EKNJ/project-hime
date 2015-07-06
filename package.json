@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/GameDevFox/project-hime",
   "devDependencies": {
+    "bluebird": "^2.9.27",
     "browserify": "^9.0.3",
     "gaze": "^0.5.1",
     "http-server": "^0.7.5",
