@@ -33,31 +33,6 @@ global.speed = pipes.mapGroup([0, 0], pipes.buildMultiply);
 axis.out(speed.sub("multiplier"));
 pxPerFrame.out(speed());
 
-// Render functions
-var buildHeader = function(level) {
-	var result = "";
-	while(level--)
-		result += " ";
-	return result + ">";
-};
-
-var renderNodeTree = function(node, level) {
-	level = (level == undefined) ? 0 : level;
-	var header = buildHeader(level);
-	console.log(header+" "+node.type);
-
-	var out = node.out;
-	if(out == undefined) {
-		return;
-	}
-
-	var outVal = out();
-	outVal = (typeof outVal == "object") ? outVal : [outVal];
-	_.each(outVal, function(node) {
-		renderNodeTree(node, level+1);
-	});
-};
-
 // Init
 $(function() {
 	var box = $(".box");
@@ -67,7 +42,16 @@ $(function() {
 
 	// Start Pump
 	setInterval(gameTime, 1000/60);
-
-	renderNodeTree(gameTime);
-	renderNodeTree(wasd.left);
 });
+
+// WebSocket test
+var socket = new WebSocket("ws://localhost:8081");
+
+socket.onopen = function() {
+	console.log("Connected!");
+	socket.send("Hello Server");
+};
+socket.onmessage = function(e) {
+	var data = e.data;
+	console.log("Data: "+data);
+};
