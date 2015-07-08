@@ -2,6 +2,7 @@ global.$ = require("jquery");
 global._ = require("lodash");
 
 global.P = require("bluebird");
+var Promise = P.Promise;
 
 var input = require("katana/input");
 var buildKeys = require("katana/keys");
@@ -28,7 +29,7 @@ var yCmp = pipes.split(pipes.compare(wasd.down, wasd.up));
 global.axis = pipes.group([xCmp, yCmp]);
 
 var xy2Point = pipes.buildXY2Point();
-pipes.chain(axis, xy2Point, system.out);
+// pipes.chain(axis, xy2Point, system.out);
 
 global.speed = pipes.mapGroup([0, 0], pipes.buildMultiply);
 
@@ -36,25 +37,30 @@ axis.out(speed.sub("multiplier"));
 pxPerFrame.out(speed());
 
 // Init
-$(function() {
-	console.log("First!");
-	P.resolve($.get("data/elements.json")).then(function() {
-		console.log("Second!");
-		// Render box
-		var elBuild = element.buildElementBuilder();
+var ready = P.promisify($.ready);
+var loadElements = $.get("data/elements.json");
 
-		var box = $(".box");
-		global.boxMovePoint = element.getMovePoint(box);
+P.join(ready, loadElements, function(load, elements) {
+	// Render box
+	var elBuild = element.buildElementBuilder(elements);
 
-		speed.out(boxMovePoint);
+	var box = elBuild("box");
+	$("body").append(box);
+	global.boxMovePoint = element.getMovePoint(box);
 
-		// Start Pump
-		setInterval(gameTime, 1000/60);
-	});
+	speed.out(boxMovePoint);
+
+	// Start Pump
+	setInterval(gameTime, 1000/60);
 });
 
 // WebSocket test
-var socket = new WebSocket("ws://localhost:8081");
+var getDomain = function(url) {
+	return url.match("\\w+://(.*?)(:\\d+)?/.*")[1];
+};
+
+var domain = getDomain(location.href);
+var socket = new WebSocket("ws://"+domain+":8081");
 
 socket.onopen = function() {
 	console.log("Connected!");
