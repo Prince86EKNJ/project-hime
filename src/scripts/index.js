@@ -16,7 +16,7 @@ system.out("Hello Hime!");
 var keyboard = buildKeys(document);
 
 // Time outputs
-global.gameTime = pipes.split(time.buildGameTime());
+var gameTime = pipes.split(time.buildGameTime());
 
 var multiply = pipes.buildMultiply(0.3);
 global.pxPerFrame = pipes.split(pipes.chain(gameTime, pipes.delta(), multiply));
