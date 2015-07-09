@@ -1,6 +1,0 @@
-#!/bin/bash
-for path in . node_modules/katana; do
-	echo
-	echo git -C $path $@
-	git -C $path $@
-done
