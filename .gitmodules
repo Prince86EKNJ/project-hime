@@ -1,0 +1,3 @@
+[submodule "katana"]
+	path = src/scripts/katana
+	url = https://Prince86EKNJ@github.com/Prince86EKNJ/katana
