@@ -10,7 +10,7 @@ var system = require("katana/system");
 var time = require("katana/time");
 var utils = require("katana/utils");
 var element = require("katana/element");
-var pipes = require("katana/pipes");
+global.pipes = require("katana/pipes");
 
 system.out("Hello Hime!");
 var keyboard = buildKeys(document);
