@@ -10,6 +10,7 @@ var buildWebSocketPipe = function(socket) {
 	socket.on("message", function(data) {
 		dataPipe.out()(data);
 	});
+	return dataPipe;
 };
 
 var buildWebSocketServerPipe = function(opts) {
@@ -22,11 +23,11 @@ var buildWebSocketServerPipe = function(opts) {
 	});
 
 	return socketPipe;
-}
+};
 
 var systemOut = function(data) {
 	console.log("Data: "+data);
-}
+};
 
 var handleSocket = function(socket) {
 	console.log("Connect!");
