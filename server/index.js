@@ -1,40 +1,46 @@
 #!/usr/bin/env node
-var func = require("katana/func");
-var pipes = require("katana/pipes");
-var WebSocketServer = require("ws").Server;
+var _ = require("lodash");
 
-var buildWebSocketPipe = function(socket) {
-	var dataPipe = func.fo(function(data) {
-		socket.send(data);
+var system = require("katana/system");
+var server = require("./server");
+
+// TODO: Make something like this
+// buildType().has("command", String).maybe("data", [Array,
+
+var isCommand = function(data) {
+	var is = _.has(data, "command");
+	is &= typeof data.command == "string";
+	if(_.has("data"))
+		is &= typeof data.data == "object";
+
+	return is;
+}
+
+var swytch = function(input, outputs) {
+	_.each(outputs, function() {
+		// TODO: this
 	});
-	socket.on("message", function(data) {
-		dataPipe.out()(data);
-	});
-	return dataPipe;
-};
+}
 
-var buildWebSocketServerPipe = function(opts) {
-	var socketPipe = pipes.pipe();
+var handleData = function(data) {
+	system.out(data);
 
-	var server = new WebSocketServer(opts);
-	server.on("connection", function(socket) {
-		var dataPipe = buildWebSocketPipe(socket);
-		socketPipe(dataPipe);
-	});
-
-	return socketPipe;
-};
-
-var systemOut = function(data) {
-	console.log("Data: "+data);
-};
+	// FIXME: This is broken, should return "no" right now
+	system.out("Is Valid:" + isCommand(data) ? "yes" : "no");
+/*
+	dataSwitch(data, [
+		[ command, handleCommand ],
+		[ badData ]
+	]);
+*/
+}
 
 var handleSocket = function(socket) {
-	console.log("Connect!");
-	socket.out(systemOut);
+	console.log("Client connected");
+	socket.out(handleData);
 
 	socket("Hello Client!");
 };
 
-var server = buildWebSocketServerPipe({ port: 8081 });
+var server = server.buildWebSocketServerPipe({ port: 8081 });
 server.out(handleSocket);
