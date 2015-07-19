@@ -5,7 +5,6 @@ mkdir -p logs
 bin/build
 
 # start servers
-# ./server.js &
 node_modules/.bin/http-server webapp > logs/http-server.log &
 
 # watch
