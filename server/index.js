@@ -22,11 +22,12 @@ var swytch = function(input, outputs) {
 	});
 }
 
-var handleData = function(data) {
+var handleData = function(dataStr) {
+	var data = JSON.parse(dataStr);
 	system.out(data);
 
 	// FIXME: This is broken, should return "no" right now
-	system.out("Is Valid:" + isCommand(data) ? "yes" : "no");
+	system.out("Is Valid: " + (isCommand(data) ? "yes" : "no"));
 /*
 	dataSwitch(data, [
 		[ command, handleCommand ],

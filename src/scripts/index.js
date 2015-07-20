@@ -64,7 +64,7 @@ var socket = new WebSocket("ws://"+domain+":8081");
 
 socket.onopen = function() {
 	console.log("Connected!");
-	socket.send("Hello Server");
+	socket.send(JSON.stringify({ command: "version" }));
 };
 socket.onmessage = function(e) {
 	var data = e.data;
