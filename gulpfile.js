@@ -19,7 +19,6 @@ gulp.task("default", function() {
 		var globPath = "src/"+dirName+"/**/*";
 		var taskName = "build-"+dirName;
 
-		// Create blank task
 		console.log("Watching \"src/"+dirName+"\" ...");
 		var watcher = gulp.watch(globPath);
 		watcher.on("change", function() {
