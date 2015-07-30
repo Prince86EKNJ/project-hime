@@ -1,27 +1,29 @@
 var _ = require("lodash");
-var fs = require("fs");
 
 var browserSync = require("browser-sync").create();
-
-var gulp = require("gulp");
-var browserify = require("gulp-browserify");
-var rename = require("gulp-rename");
+var browserify = require("browserify");
 var files2Json = require("gulp-file-contents-to-json");
+var gulp = require("gulp");
+var jshint = require("gulp-jshint");
+var jshintStylish = require("jshint-stylish");
+var source = require("vinyl-source-stream");
+var watchify = require("watchify");
+
+// Variables
+var bundler = watchify(browserify("src/scripts/index.js"));
 
 // Default task
 gulp.task("default", ["start", "watch"]);
 
 // Build tasks
-gulp.task("build-scripts", function() {
-	var stream = gulp.src("src/scripts/index.js")
-		.pipe(browserify())
-		.pipe(rename("main.js"))
-		.pipe(gulp.dest("webapp/scripts"));
+var buildScripts = function() {
 
-	browserSync.reload();
-
-	return stream;
-});
+	return bundler.bundle()
+		.pipe(source("main.js"))
+		.pipe(gulp.dest("webapp/scripts"))
+		.pipe(browserSync.stream({ once: true }));	
+};
+gulp.task("build-scripts", ["lint"], buildScripts);
 
 gulp.task("build-elements", function() {
 	var stream =  gulp.src("src/elements/*")
@@ -33,39 +35,52 @@ gulp.task("build-elements", function() {
 	return stream;
 });
 
-var buildTasks = _(gulp.tasks)
-	.filter(function(task) {
-		return _.startsWith(task.name, "build-");
-	})
-	.map(function(task) {
-		return task.name;
-	}).value();
+var getTaskList = function(groupName) {
+	var tasks = _(gulp.tasks)
+		.filter(function(task) {
+			return _.startsWith(task.name, groupName+"-");
+		})
+		.map(function(task) {
+			return task.name;
+		}).value();
+	return tasks;
+}
+
+// Watch tasks
+gulp.task("watch-elements", ["build-elements"]);
 
 // General tasks
+var buildTasks = getTaskList("build");
 gulp.task("start", buildTasks, function() {
 	browserSync.init({
+		files: ["webapp/styles/main.css"],
+		reloadOnRestart: true,
+		open: false,
 		server: {
 			baseDir: "./webapp"
 		}
 	});
+
+	bundler.on("update", buildScripts);
 });
 
 gulp.task("watch", function() {
 
-	// Watch and build "src/*" directories
-	var sourceDirNames = fs.readdirSync("src");
-	_.each(sourceDirNames, function(dirName) {
-		var globPath = "src/"+dirName+"/**/*";
-		var taskName = "build-"+dirName;
-
+	var watchTasks = getTaskList("watch");	
+	_.each(watchTasks, function(taskName) {
+		var dirName = taskName.substring(6);
 		console.log("Watching \"src/"+dirName+"\" ...");
+
 		var watcher = gulp.watch(globPath);
 		watcher.on("change", function() {
-			if(_.has(gulp.tasks, taskName)) {
-				gulp.start(taskName);
-			} else {
-				console.log("Task \""+taskName+"\" has not been defined");
-			}
+			gulp.start(taskName);
 		});
+		var globPath = "src/"+dirName+"/**/*";		
 	});
+});
+
+gulp.task("lint", function() {
+	gulp.src("src/scripts/**/*.js")
+		.pipe(jshint())
+		.pipe(jshint.reporter(jshintStylish));
 });
