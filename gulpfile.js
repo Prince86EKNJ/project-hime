@@ -21,7 +21,7 @@ var buildScripts = function() {
 	return bundler.bundle()
 		.pipe(source("main.js"))
 		.pipe(gulp.dest("webapp/scripts"))
-		.pipe(browserSync.stream({ once: true }));	
+		.pipe(browserSync.stream({ once: true }));
 };
 gulp.task("build-scripts", ["lint"], buildScripts);
 
@@ -66,7 +66,7 @@ gulp.task("start", buildTasks, function() {
 
 gulp.task("watch", function() {
 
-	var watchTasks = getTaskList("watch");	
+	var watchTasks = getTaskList("watch");
 	_.each(watchTasks, function(taskName) {
 		var dirName = taskName.substring(6);
 		console.log("Watching \"src/"+dirName+"\" ...");
@@ -75,7 +75,7 @@ gulp.task("watch", function() {
 		watcher.on("change", function() {
 			gulp.start(taskName);
 		});
-		var globPath = "src/"+dirName+"/**/*";		
+		var globPath = "src/"+dirName+"/**/*";
 	});
 });
 
