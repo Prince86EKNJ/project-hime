@@ -43,5 +43,11 @@ var handleSocket = function(socket) {
 	socket("Hello Client!");
 };
 
-var server = server.buildWebSocketServerPipe({ port: 8081 });
-server.out(handleSocket);
+if(module.parent) {
+	// Child
+	module.exports = server;
+} else {
+	// Parent
+	var serverInst = server.buildWebSocketServerPipe({ port: 8081 });
+	serverInst.out(handleSocket);
+}
