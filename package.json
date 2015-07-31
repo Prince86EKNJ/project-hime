@@ -19,6 +19,7 @@
     "bluebird": "^2.9.32",
     "browser-sync": "^2.8.0",
     "browserify": "^11.0.1",
+    "exorcist": "^0.4.0",
     "gulp": "^3.9.0",
     "gulp-file-contents-to-json": "^0.1.2",
     "gulp-jshint": "^1.11.2",

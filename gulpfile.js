@@ -2,6 +2,7 @@ var _ = require("lodash");
 
 var browserSync = require("browser-sync").create();
 var browserify = require("browserify");
+var exorcist = require("exorcist");
 var files2Json = require("gulp-file-contents-to-json");
 var gulp = require("gulp");
 var jshint = require("gulp-jshint");
@@ -10,7 +11,8 @@ var source = require("vinyl-source-stream");
 var watchify = require("watchify");
 
 // Variables
-var bundler = watchify(browserify("src/scripts/index.js"));
+watchify.args.debug = true;
+var bundler = watchify(browserify("src/scripts/index.js", watchify.args));
 
 // Default task
 gulp.task("default", ["start", "watch"]);
@@ -19,6 +21,7 @@ gulp.task("default", ["start", "watch"]);
 var buildScripts = function() {
 
 	return bundler.bundle()
+		.pipe(exorcist("webapp/scripts/main.js.map"))
 		.pipe(source("main.js"))
 		.pipe(gulp.dest("webapp/scripts"))
 		.pipe(browserSync.stream({ once: true }));
