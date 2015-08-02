@@ -54,9 +54,19 @@ var getTaskList = function(groupName) {
 gulp.task("watch-elements", ["build-elements"]);
 
 // General tasks
-gulp.task("start", ["build"], function() {
+gulp.task("start", ["start-server"], function() {
+	gulp.start("start-webapp");
+});
+
+gulp.task("start-server", function() {
+	gulp.start("server");
+});
+
+
+gulp.task("start-webapp", ["build"], function() {
 	gulp.start("browserSync");
 });
+
 
 var buildTasks = getTaskList("build");
 gulp.task("build", buildTasks);
