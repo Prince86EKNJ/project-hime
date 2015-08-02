@@ -1,0 +1,9 @@
+#!/bin/bash
+if [ ! -d node_modules/katana ]; then
+	ln -s ../src/scripts/katana node_modules/katana;
+fi
+if [ ! -d node_modules/kitsune ]; then
+	ln -s ../src/scripts/kitsune node_modules/kitsune;
+fi
+git submodule init
+git submodule update

@@ -7,6 +7,7 @@ var files2Json = require("gulp-file-contents-to-json");
 var gulp = require("gulp");
 var jshint = require("gulp-jshint");
 var jshintStylish = require("jshint-stylish");
+var kitsune = require("kitsune");
 var source = require("vinyl-source-stream");
 var watchify = require("watchify");
 
@@ -53,8 +54,18 @@ var getTaskList = function(groupName) {
 gulp.task("watch-elements", ["build-elements"]);
 
 // General tasks
+gulp.task("start", ["build", "server", "browserSync"]);
+
 var buildTasks = getTaskList("build");
-gulp.task("start", buildTasks, function() {
+gulp.task("build", buildTasks);
+
+
+gulp.task("browserSync", function(done) {
+
+	// TODO: Move this
+	bundler.on("update", buildScripts);
+
+
 	browserSync.init({
 		files: ["webapp/styles/main.css"],
 		reloadOnRestart: true,
@@ -62,9 +73,7 @@ gulp.task("start", buildTasks, function() {
 		server: {
 			baseDir: "./webapp"
 		}
-	});
-
-	bundler.on("update", buildScripts);
+	}, done);
 });
 
 gulp.task("watch", function() {
@@ -81,6 +90,11 @@ gulp.task("watch", function() {
 		var globPath = "src/"+dirName+"/**/*";
 	});
 });
+
+gulp.task("server", function() {
+	kitsune.start();
+});
+
 
 gulp.task("lint", function() {
 	gulp.src("src/scripts/**/*.js")
