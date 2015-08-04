@@ -1,5 +1,6 @@
 var _ = require("lodash");
 
+var babelify = require("babelify");
 var browserSync = require("browser-sync").create();
 var browserify = require("browserify");
 var exorcist = require("exorcist");
@@ -14,6 +15,12 @@ var watchify = require("watchify");
 // Variables
 watchify.args.debug = true;
 var bundler = watchify(browserify("src/scripts/index.js", watchify.args));
+
+// Babel transform
+bundler.transform(babelify.configure({
+	blacklist: ["strict"],
+	sourceMapRelative: "webapp/scripts"
+}));
 
 // Default task
 gulp.task("default", ["start", "watch"]);
@@ -67,16 +74,13 @@ gulp.task("start-webapp", ["build"], function() {
 	gulp.start("browserSync");
 });
 
-
 var buildTasks = getTaskList("build");
 gulp.task("build", buildTasks);
-
 
 gulp.task("browserSync", function(done) {
 
 	// TODO: Move this
 	bundler.on("update", buildScripts);
-
 
 	browserSync.init({
 		files: ["webapp/styles/main.css"],
@@ -107,9 +111,8 @@ gulp.task("server", function() {
 	kitsune.start();
 });
 
-
 gulp.task("lint", function() {
-	gulp.src("src/scripts/**/*.js")
-		.pipe(jshint())
+	return gulp.src("src/scripts/**/*.js")
+		.pipe(jshint({ esnext: true }))
 		.pipe(jshint.reporter(jshintStylish));
 });

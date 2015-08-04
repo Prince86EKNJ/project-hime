@@ -2,7 +2,7 @@ global.$ = require("jquery");
 global._ = require("lodash");
 
 global.P = require("bluebird");
-var Promise = P.Promise;
+//var Promise = P.Promise;
 
 var input = require("katana/input");
 var buildKeys = require("katana/keys");
