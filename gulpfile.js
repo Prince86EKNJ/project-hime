@@ -18,7 +18,6 @@ var bundler = watchify(browserify("src/scripts/index.js", watchify.args));
 
 // Babel transform
 bundler.transform(babelify.configure({
-	blacklist: ["strict"],
 	sourceMapRelative: "webapp/scripts"
 }));
 
@@ -27,7 +26,6 @@ gulp.task("default", ["start", "watch"]);
 
 // Build tasks
 var buildScripts = function() {
-
 	return bundler.bundle()
 		.pipe(exorcist("webapp/scripts/main.js.map"))
 		.pipe(source("main.js"))

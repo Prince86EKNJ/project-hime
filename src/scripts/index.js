@@ -1,8 +1,4 @@
-global.$ = require("jquery");
-global._ = require("lodash");
-
-global.P = require("bluebird");
-//var Promise = P.Promise;
+var _ = require("lodash");
 
 var input = require("katana/input");
 var buildKeys = require("katana/keys");
@@ -10,7 +6,7 @@ var system = require("katana/system");
 var time = require("katana/time");
 var utils = require("katana/utils");
 var element = require("katana/element");
-global.pipes = require("katana/pipes");
+var pipes = require("katana/pipes");
 
 system.out("Hello Hime!");
 var keyboard = buildKeys(document);
@@ -19,34 +15,38 @@ var keyboard = buildKeys(document);
 var gameTime = pipes.split(time.buildGameTime());
 
 var multiply = pipes.buildMultiply(0.3);
-global.pxPerFrame = pipes.split(pipes.chain(gameTime, pipes.delta(), multiply));
+var pxPerFrame = pipes.split(pipes.chain(gameTime, pipes.delta(), multiply));
 
 // Keys
-global.wasd = input.buildWASD(keyboard, input.UDLR);
+var wasd = input.buildWASD(keyboard, input.UDLR);
 
 var xCmp = pipes.split(pipes.compare(wasd.right, wasd.left));
 var yCmp = pipes.split(pipes.compare(wasd.down, wasd.up));
-global.axis = pipes.group([xCmp, yCmp]);
+var axis = pipes.group([xCmp, yCmp]);
 
 var xy2Point = pipes.buildXY2Point();
 // pipes.chain(axis, xy2Point, system.out);
 
-global.speed = pipes.mapGroup([0, 0], pipes.buildMultiply);
+var speed = pipes.mapGroup([0, 0], pipes.buildMultiply);
 
 axis.out(speed.sub("multiplier"));
 pxPerFrame.out(speed());
 
 // Init
-var ready = P.promisify($.ready);
-var loadElements = $.get("data/elements.json");
+var ready = not$.ready();
+var loadElements = not$.ajaxGetJson("data/elements.json");
 
-P.join(ready, loadElements, function(load, elements) {
+Promise.all([ready, loadElements]).then(function(results) {
+
+	var [, elements] = results;
+
 	// Render box
 	var elBuild = element.buildElementBuilder(elements);
 
 	var box = elBuild("box");
-	$("body").append(box);
-	global.boxMovePoint = element.getMovePoint(box);
+	var body = not$.find("body")[0];
+	body.appendChild(box);
+	var boxMovePoint = element.getMovePoint(box);
 
 	speed.out(boxMovePoint);
 
