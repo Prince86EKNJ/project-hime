@@ -7,6 +7,7 @@ var time = require("katana/time");
 var utils = require("katana/utils");
 var element = require("katana/element");
 var pipes = require("katana/pipes");
+var not$ = require("katana/not-jquery");
 
 system.out("Hello Hime!");
 var keyboard = buildKeys(document);
