@@ -24,11 +24,14 @@ bundler.transform(babelify.configure({
 // Default task
 gulp.task("default", ["start", "watch"]);
 
+var babel = require("gulp-babel");
+
 // Build tasks
 var buildScripts = function() {
-	return bundler.bundle()
-		.pipe(exorcist("webapp/scripts/main.js.map"))
-		.pipe(source("main.js"))
+	return gulp.src("src/scripts/**/*.js")
+		.pipe(babel({ modules: "amd" }))
+//		.pipe(exorcist("webapp/scripts/main.js.map"))
+//		.pipe(source("main.js"))
 		.pipe(gulp.dest("webapp/scripts"))
 		.pipe(browserSync.stream({ once: true }));
 };

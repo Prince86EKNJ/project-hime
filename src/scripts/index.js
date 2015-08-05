@@ -1,13 +1,13 @@
-var _ = require("lodash");
+import _ from "lodash";
 
-var input = require("katana/input");
-var buildKeys = require("katana/keys");
-var system = require("katana/system");
-var time = require("katana/time");
-var utils = require("katana/utils");
-var element = require("katana/element");
-var pipes = require("katana/pipes");
-var not$ = require("katana/not-jquery");
+import input from "katana/input";
+import buildKeys from "katana/keys";
+import system from "katana/system";
+import time from "katana/time";
+import utils from "katana/utils";
+import element from "katana/element";
+import pipes from "katana/pipes";
+import not$ from "katana/not-jquery";
 
 system.out("Hello Hime!");
 var keyboard = buildKeys(document);
