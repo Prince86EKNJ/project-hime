@@ -1,5 +1,6 @@
 var _ = require("lodash");
 
+var babel = require("gulp-babel");
 var babelify = require("babelify");
 var browserSync = require("browser-sync").create();
 var browserify = require("browserify");
@@ -8,26 +9,25 @@ var files2Json = require("gulp-file-contents-to-json");
 var gulp = require("gulp");
 var jshint = require("gulp-jshint");
 var jshintStylish = require("jshint-stylish");
-var kitsune = require("kitsune");
 var source = require("vinyl-source-stream");
 var watchify = require("watchify");
 
 // Variables
-watchify.args.debug = true;
-var bundler = watchify(browserify("src/scripts/index.js", watchify.args));
-
-// Babel transform
-bundler.transform(babelify.configure({
-	sourceMapRelative: "webapp/scripts"
-}));
+// watchify.args.debug = true;
 
 // Default task
 gulp.task("default", ["start", "watch"]);
 
-var babel = require("gulp-babel");
-
 // Build tasks
 var buildScripts = function() {
+
+	// var bundler = watchify(browserify("src/scripts/index.js", watchify.args));
+
+	// // Babel transform
+	// bundler.transform(babelify.configure({
+	// 	sourceMapRelative: "webapp/scripts"
+	// }));
+
 	return gulp.src("src/scripts/**/*.js")
 		.pipe(babel({ modules: "amd" }))
 //		.pipe(exorcist("webapp/scripts/main.js.map"))
@@ -36,6 +36,10 @@ var buildScripts = function() {
 		.pipe(browserSync.stream({ once: true }));
 };
 gulp.task("build-scripts", ["lint"], buildScripts);
+
+gulp.task("watch-scripts", function() {
+	gulp.watch("src/scripts/**/*.js", ["build-scripts"]);
+});
 
 gulp.task("build-elements", function() {
 	var stream =  gulp.src("src/elements/*")
@@ -81,7 +85,7 @@ gulp.task("build", buildTasks);
 gulp.task("browserSync", function(done) {
 
 	// TODO: Move this
-	bundler.on("update", buildScripts);
+	// bundler.on("update", buildScripts);
 
 	browserSync.init({
 		files: ["webapp/styles/main.css"],
@@ -108,9 +112,9 @@ gulp.task("watch", function() {
 	});
 });
 
-gulp.task("server", function() {
-	kitsune.start();
-});
+// gulp.task("server", function() {
+// 	kitsune.start();
+// });
 
 gulp.task("lint", function() {
 	return gulp.src("src/scripts/**/*.js")

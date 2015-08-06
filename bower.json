@@ -1,0 +1,14 @@
+{
+  "name": "project-hime",
+  "version": "0.0.1",
+  "homepage": "https://github.com/Prince86EKNJ/project-hime",
+  "authors": [
+    "Edward Nicholes Jr. <Prince86EKNJ@gmail.com>"
+  ],
+  "description": "An experimental JavaScript and HTML5 Game",
+  "license": "GPLv2",
+  "dependencies": {
+    "lodash": "~3.10.1",
+    "vue": "~0.12.9"
+  }
+}

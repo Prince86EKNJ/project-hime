@@ -4,3 +4,4 @@ node_modules/
 
 webapp/scripts/
 webapp/data/
+bower_components

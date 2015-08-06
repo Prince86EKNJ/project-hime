@@ -2,18 +2,17 @@ import _ from "lodash";
 
 import input from "katana/input";
 import buildKeys from "katana/keys";
-import system from "katana/system";
-import time from "katana/time";
-import utils from "katana/utils";
-import element from "katana/element";
-import pipes from "katana/pipes";
-import not$ from "katana/not-jquery";
+import { log } from "katana/system";
+import { buildGameTime } from "katana/time";
+import * as element from "katana/element";
+import * as pipes from "katana/pipes";
+import * as not$ from "katana/not-jquery";
 
-system.out("Hello Hime!");
+log("Hello Hime!");
 var keyboard = buildKeys(document);
 
 // Time outputs
-var gameTime = pipes.split(time.buildGameTime());
+var gameTime = pipes.split(buildGameTime());
 
 var multiply = pipes.buildMultiply(0.3);
 var pxPerFrame = pipes.split(pipes.chain(gameTime, pipes.delta(), multiply));
@@ -26,7 +25,7 @@ var yCmp = pipes.split(pipes.compare(wasd.down, wasd.up));
 var axis = pipes.group([xCmp, yCmp]);
 
 var xy2Point = pipes.buildXY2Point();
-// pipes.chain(axis, xy2Point, system.out);
+// pipes.chain(axis, xy2Point, log);
 
 var speed = pipes.mapGroup([0, 0], pipes.buildMultiply);
 
