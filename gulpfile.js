@@ -33,14 +33,19 @@ gulp.task("lint", function() {
 
 // Build
 gulp.task("link-libraries", ["clean"], function() {
-	return gulp.src(["bower_components/lodash/lodash.js", "bower_components/vue/dist/vue.js"])
-		.pipe(symlink(["webapp/scripts/lodash.js", "webapp/scripts/vue.js"]));	
+	return gulp.src([
+			"bower_components/lodash/lodash.js",
+			"bower_components/vue/dist/vue.js"
+		])
+		.pipe(symlink(["webapp/scripts/lodash.js", "webapp/scripts/vue.js"]));
 });
 
 gulp.task("build-scripts", ["lint", "link-libraries"], function() {
 	return gulp.src("src/scripts/**/*.js")
 //		.pipe(exorcist("webapp/scripts/main.js.map"))
-		.pipe(babel({ modules: "amd" }))
+		.pipe(babel({
+			modules: "amd"
+		}))
 //		.pipe(source("main.js"))
 		.pipe(gulp.dest("webapp/scripts"))
 		.pipe(browserSync.stream({ once: true }));
