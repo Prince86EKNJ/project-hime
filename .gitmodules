@@ -1,6 +1,3 @@
 [submodule "katana"]
 	path = src/scripts/katana
 	url = https://Prince86EKNJ@github.com/Prince86EKNJ/katana
-[submodule "kitsune"]
-	path = src/scripts/kitsune
-	url = https://Prince86EKNJ@github.com/Prince86EKNJ/kitsune
